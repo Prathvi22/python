@@ -1,0 +1,107 @@
+class Book:
+    def __init__(self, title, author, isbn):
+        self.title = title
+        self.author = author
+        self.isbn = isbn
+        self.checked_out = False
+
+class Library:
+    def __init__(self):
+        self.books = []
+        self.users = {}
+
+    def add_book(self, title, author, isbn):
+        book = Book(title, author, isbn)
+        self.books.append(book)
+        print("Book added:", title)
+
+    def search_book(self, keyword):
+        found_books = []
+        for book in self.books:
+            if keyword.lower() in book.title.lower() or keyword.lower() in book.author.lower():
+                found_books.append(book)
+        return found_books
+
+    def create_account(self, username, password):
+        if username not in self.users:
+            self.users[username] = password
+            print("Account created for:", username)
+        else:
+            print("Username already exists. Please choose another.")
+
+    def authenticate(self, username, password):
+        return self.users.get(username) == password
+
+    def checkout_book(self, book_title, username):
+        for book in self.books:
+            if book.title.lower() == book_title.lower() and not book.checked_out:
+                book.checked_out = True
+                print("Book checked out:", book.title)
+                return
+        print("Book not found or already checked out.")
+
+    def return_book(self, book_title):
+        for book in self.books:
+            if book.title.lower() == book_title.lower() and book.checked_out:
+                book.checked_out = False
+                print("Book returned:", book.title)
+                return
+        print("Book not found or already returned.")
+
+if __name__ == "__main__":
+    library = Library()
+
+    while True:
+        print("\nLibrary Management System")
+        print("1. Add Book")
+        print("2. Search Book")
+        print("3. Create Account")
+        print("4. Check Out Book")
+        print("5. Return Book")
+        print("6. Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            title = input("Enter book title: ")
+            author = input("Enter author name: ")
+            isbn = input("Enter ISBN: ")
+            library.add_book(title, author, isbn)
+
+        elif choice == '2':
+            keyword = input("Enter search keyword: ")
+            found_books = library.search_book(keyword)
+            if found_books:
+                print("Found books:")
+                for book in found_books:
+                    print(book.title, "by", book.author)
+            else:
+                print("No books found.")
+
+        elif choice == '3':
+            username = input("Enter username: ")
+            password = input("Enter password: ")
+            library.create_account(username, password)
+
+        elif choice == '4':
+            if not library.users:
+                print("Please create an account first.")
+                continue
+            username = input("Enter your username: ")
+            password = input("Enter your password: ")
+            if library.authenticate(username, password):
+                book_title = input("Enter book title to check out: ")
+                library.checkout_book(book_title, username)
+            else:
+                print("Authentication failed. Please check your credentials.")
+
+        elif choice == '5':
+            book_title = input("Enter book title to return: ")
+            library.return_book(book_title)
+
+        elif choice == '6':
+            print("Exiting the program.")
+            break
+
+        else:
+            print("Invalid choice. Please select a valid option.")
